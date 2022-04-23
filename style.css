@@ -129,3 +129,42 @@ body{
     position: absolute;
     background-image: url(images/disparo.png);
 }
+
+#explosao1{
+    width: 15px;
+    height: 87px;
+    position: absolute;
+}
+
+
+#explosao2{
+    width: 15px;
+    height: 87px;
+    position: absolute;
+}
+
+#explosao3{
+    width:  44px;
+    height: 51px;
+    position: absolute;
+}
+
+.anima4{
+    width: 44px;
+    height: 51px;
+    background-image: url(images/amigo_morte.png);
+    animation: play3 .5s steps(7) infinite;
+    -webkit-animation:  play3 .5s steps(7) infinite;
+    -moz-animation:  play3 .5s steps(7) infinite;
+    -ms-zoom-animation:  play3 .5s steps(7) infinite;
+    -o-animation:  play3 .5s steps(7) infinite;
+}
+
+@keyframes play3{
+    from{
+        background-position: 0px;
+    }
+    to{
+        background-position: -308px;
+    }
+}
