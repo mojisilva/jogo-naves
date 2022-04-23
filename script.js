@@ -5,6 +5,8 @@ function start(){
     $("#fundo-game").append("<div class='anima2' id='inimigo1'></div>")
     $("#fundo-game").append("<div id='inimigo2'></div>")
     $("#fundo-game").append("<div class='anima3' id='amigo'></div>")
+    $("#fundo-game").append("<div id='placar'></div>")
+    $("#fundo-game").append("<div id='energia'></div>")
 
     var jogo = {};
     var TECLA = {
@@ -17,6 +19,24 @@ function start(){
     jogo.pressionou = [];
     var podeAtirar =  true;
     var fimJogo = false;
+    var pontos=0;
+    var salvos=0;
+    var perdidos=0;
+    var energiaAtual = 3;
+    var somDisparo = document.getElementById('somDisparo')
+    var somExplosao = document.getElementById('somExplosao')
+    var musica = document.getElementById('musica')
+    var somGameOver = document.getElementById('somGameOver')
+    var somPerdido = document.getElementById('somPerdido')
+    var somResgate = document.getElementById('somResgate')
+
+
+    musica.addEventListener("ended", function(){
+        musica.currentTime =0;
+        musica.play();
+    }, false);
+    musica.play();
+
 
     $(document).keydown(function(e){
         jogo.pressionou[e.which] =  true;
@@ -39,6 +59,9 @@ function start(){
         moveInimigo2();
         moveAmigo();
         colisao();
+        placar();
+        energia();
+        
     }
 
     function moveFundo(){
@@ -98,6 +121,7 @@ function start(){
     }
 
     function disparo(){
+        somDisparo.play();
         if(podeAtirar === true){
             podeAtirar = false;
             topo = parseInt($("#jogador"). css("top"));
@@ -139,6 +163,8 @@ function start(){
             posicaoY = parseInt(Math.random() * 334);
             $("#inimigo1").css("left", 694);
             $("#inimigo1").css("top", posicaoY);
+            energiaAtual--;
+            
         }
 
         if(colisao2.length > 0){
@@ -147,6 +173,7 @@ function start(){
             explosao2(inimigo2X, inimigo2Y);
             $("#inimigo2").remove();
             reposicionarInimigo2();
+            energiaAtual--;
         }
 
         if(colisao3.length > 0){
@@ -157,6 +184,8 @@ function start(){
             posicaoY = parseInt(Math.random() * 334);
             $("#inimigo1").css("left", 694);
             $("#inimigo1").css("top", posicaoY);
+            pontos = pontos + 100;
+            velocidade = velocidade +0.3;
             
         }
 
@@ -167,23 +196,29 @@ function start(){
             explosao2(inimigo2X, inimigo2Y);
             $("#disparo").css("left",950);
             reposicionarInimigo2();
+            pontos = pontos + 50;
         }
 
         if(colisao5.length > 0){
+            somResgate.play();
             reposicionarAmigo();
             $("#amigo").remove();
+            salvos++;
         }
 
         if(colisao6.length > 0){
+            somPerdido.play();
             amigoX = parseInt($("#amigo").css("left"));
             amigoY = parseInt($("#amigo").css("top"));
             explosao3(amigoX, amigoY);
             $("#amigo").remove();
             reposicionarAmigo();
+            perdidos++;
         }     
     }
 
     function explosao1(inimigoX, inimigoY){
+        somExplosao.play();
         $("#fundo-game").append("<div id='explosao1'></div>");
         $("#explosao1").css("background-image", "url(images/explosao.png)");
         var div=$("#explosao1");
@@ -201,6 +236,7 @@ function start(){
     }
 
     function explosao2(inimigoX, inimigoY){
+        somExplosao.play();
         $("#fundo-game").append("<div id='explosao2'></div>");
         $("#explosao2").css("background-image", "url(images/explosao.png)");
         var div=$("#explosao2");
@@ -255,6 +291,49 @@ function start(){
         }
     }
 
+    function placar(){
+        $("#placar").html("<h2>Pontos:  " + pontos + "Salvos:  "+ salvos + "Perdidos:  " + perdidos + "</h2>");
+    }
+
+    function energia(){
+        if(energiaAtual === 3){
+            $("#energia").css("background-image", "url(images/energia3.png)")
+        }
+
+        if(energiaAtual === 2){
+            $("#energia").css("background-image", "url(images/energia2.png)")
+        }
+        if(energiaAtual === 1){
+            $("#energia").css("background-image", "url(images/energia1.png)")
+        }
+        if(energiaAtual === 0){
+            $("#energia").css("background-image", "url(images/energia0.png)")
+            gameOver();
+        }
+    }
+    function gameOver(){
+        fimJogo = true;
+        musica.pause();
+        somGameOver.play();
+
+        window.clearInterval(jogo.timer);
+        jogo.timer = null;
+        $("#jogador").remove();
+        $("#inimigo1").remove();
+        $("#inimigo2").remove();
+        $("#amigo").remove();
+        
+        $("#fundo-game").append("<div id='fim'></div>");
+
+        $("#fim").html("<h1> Game Over </h1><p>Sua pontuação foi: " + pontos + "</p>" + "<div id='reinicia' onClick=reiniciarJogo()><h3>Jogar Novamente</h3></div>");
+    }
+
+}
+function reiniciarJogo(){
+    somGameOver.pause();
+    $("#fim").remove();
+    start();
+    
 }
 
 
